@@ -1,4 +1,4 @@
-package projecteuler.substringdivisibility;
+package projecteuler.p43_substringdivisibility;
 
 
 import java.util.Arrays;

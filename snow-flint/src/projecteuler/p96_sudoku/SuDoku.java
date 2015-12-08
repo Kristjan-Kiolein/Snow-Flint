@@ -1,4 +1,4 @@
-package projecteuler.sudoku;
+package projecteuler.p96_sudoku;
 
 
 
