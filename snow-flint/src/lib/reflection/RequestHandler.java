@@ -19,96 +19,92 @@ import java.util.Set;
 public abstract class RequestHandler {
 
 
-	/**
-	 * Instantiates class with values from request parameters All class
-	 * variables must have corresponding setters Mark up for html <input>
-	 * element Regular variable : name="variableName" Another class :
-	 * name="anotherClassVariableName.variableName" List : name="listName[index]
-	 * List of classes : name="listName[index].variableName" Depth of theses
-	 * links may be as large as needed. (class within class within list within
-	 * class etc...) WARNING! Does not work with anonymous enums!
-	 * 
-	 * @param clazz
-	 *            - class to instantiate
-	 * @param requestParams
-	 *            - html form request parameters
-	 * @param variableClassPrefix
-	 *            - class name that will be ignored ie. prefix = something then
-	 *            something.nothing.list[0] will be read as nothing.list[0]
-	 * @return instantiated class
-	 */
-	protected <T> T getFormView(Class<T> clazz, Map<String, List<String>> requestParams) {
-		Map<String, String[]> params = new HashMap<>();
-		for (Entry<String, List<String>> entry : requestParams.entrySet()) {
-			params.put(entry.getKey(), entry.getValue().toArray(new String[0]));
-		}
-		return (T) getFormView(clazz, params, null);
-	}
+  /**
+   * Instantiates class with values from request parameters All class variables must have
+   * corresponding setters Mark up for html <input> element Regular variable : name="variableName"
+   * Another class : name="anotherClassVariableName.variableName" List : name="listName[index] List
+   * of classes : name="listName[index].variableName" Depth of theses links may be as large as
+   * needed. (class within class within list within class etc...) WARNING! Does not work with
+   * anonymous enums!
+   * @param clazz - class to instantiate
+   * @param requestParams - html form request parameters
+   * @param variableClassPrefix - class name that will be ignored ie. prefix = something then
+   *          something.nothing.list[0] will be read as nothing.list[0]
+   * @return instantiated class
+   */
+  protected <T> T getFormView(Class<T> clazz, Map<String, List<String>> requestParams) {
+    Map<String, String[]> params = new HashMap<>();
+    for (Entry<String, List<String>> entry : requestParams.entrySet()) {
+      params.put(entry.getKey(), entry.getValue().toArray(new String[0]));
+    }
+    return (T) getFormView(clazz, params, null);
+  }
 
-	/**
-	 * Instantiates class with values from request parameters
-	 * 
-	 * @param clazz
-	 *            - class to instantiate
-	 * @param requestParams
-	 *            - html form request parameters
-	 * @param variableClassPrefix
-	 *            - class name that will be ignored ie. prefix = something then
-	 *            something.nothing.list[0] will be read as nothing.list[0]
-	 * @return instantiated class
-	 */
-	//TODO(Kristjan Kiolein) Is it safe to check enum with ENUM.isEnum()? Interaction with anonymous enums.
-	@SuppressWarnings("unchecked")
-	private <T> T getFormView(Class<T> clazz, Map<String, String[]> requestParams, String variableClassPrefix) {
-		T clazzObject = null;
-		try {
-			//If desired class is one of "simple" classes
-			//Simple classes are all primitives, Date, Enum, BigInteger, BigDecimal
-			if (ClassCastHelper.isSimpleClass(clazz)) {
-				try {
-					if (requestParams.get(variableClassPrefix).length == 1) {
-						return (T) ClassCastHelper.castToSimpleClass(clazz, requestParams.get(variableClassPrefix)[0]);
-					} else {
-						throw new RuntimeException("Parameter doesn't have exactly one value. Can't assign value to field.");
-					}//
-				} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ParseException | UnknownObjectException e) {
-//					String message = "Error while handeling simple values.";
-					e.printStackTrace();
-				}
-			}
-			//If desired class is not handled by castToSimpleClass
-			else {
-				clazzObject = clazz.newInstance();
-				for (Method clazzMethod : clazz.getMethods()) {
-					try {
-						if (clazzMethod.getName().startsWith("set")) {
-							Class<?>[] methodParamterTypes = clazzMethod.getParameterTypes();
-							// Can only work with setters that take one argument.
-							if (methodParamterTypes != null && methodParamterTypes.length == 1) {
-								String parameterName = Introspector.decapitalize(clazzMethod.getName().substring(3));
-								parameterName = variableClassPrefix == null ? parameterName : variableClassPrefix + "." + parameterName;
-								// Handel collections
-								if (Collection.class.isAssignableFrom(methodParamterTypes[0])) {
+  /**
+   * Instantiates class with values from request parameters
+   * @param clazz  - class to instantiate
+   * @param requestParams - html form request parameters
+   * @param variableClassPrefix - class name that will be ignored ie. prefix = something then
+   *          something.nothing.list[0] will be read as nothing.list[0]
+   * @return instantiated class
+   */
+  // TODO(Kristjan Kiolein) Is it safe to check enum with ENUM.isEnum()?
+  //Interaction with anonymous enums.
+  @SuppressWarnings("unchecked")
+  private <T> T getFormView(Class<T> clazz, Map<String, String[]> requestParams,
+      String variableClassPrefix) {
+    T clazzObject = null;
+    try {
+      // If desired class is one of "simple" classes
+      // Simple classes are all primitives, Date, Enum, BigInteger, BigDecimal
+      if (ClassCastHelper.isSimpleClass(clazz)) {
+        try {
+          if (requestParams.get(variableClassPrefix).length == 1) {
+            return (T) ClassCastHelper.castToSimpleClass(clazz,
+                requestParams.get(variableClassPrefix)[0]);
+          } else {
+            throw new RuntimeException(
+                "Parameter doesn't have exactly one value. Can't assign value to field.");
+          }
+        } catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+            | SecurityException | ParseException | UnknownObjectException e) {
+          // String message = "Error while handeling simple values.";
+          e.printStackTrace();
+        }
+      //If desired class is not handled by castToSimpleClass
+      } else {
+        clazzObject = clazz.newInstance();
+        for (Method clazzMethod : clazz.getMethods()) {
+          try {
+            if (clazzMethod.getName().startsWith("set")) {
+              Class<?>[] methodParamterTypes = clazzMethod.getParameterTypes();
+              // Can only work with setters that take one argument.
+              if (methodParamterTypes != null && methodParamterTypes.length == 1) {
+                String paramName = Introspector.decapitalize(clazzMethod.getName().substring(3));
+                paramName = variableClassPrefix == null ? paramName : variableClassPrefix 
+                    + "." + paramName;
+                // Handel collections
+                if (Collection.class.isAssignableFrom(methodParamterTypes[0])) {
 
-									ParameterizedType type = (ParameterizedType) clazzMethod.getGenericParameterTypes()[0];
-									Class<?> genericType = (Class<?>) type.getActualTypeArguments()[0];
+                  ParameterizedType type = (ParameterizedType) clazzMethod
+                      .getGenericParameterTypes()[0];
+                  Class<?> genericType = (Class<?>) type.getActualTypeArguments()[0];
 
-									//Lists
-									if (List.class.isAssignableFrom(methodParamterTypes[0])) {
-										clazzMethod.invoke(clazzObject, getFormViewList(genericType, requestParams, parameterName));
-									}
-									//Sets
-									else if (Set.class.isAssignableFrom(methodParamterTypes[0])) {
-										clazzMethod.invoke(clazzObject, getFormViewSet(genericType, requestParams, parameterName));
-									}
-
-								}
-								// Handel simple values
-								else {
-									String[] argumentStringValues = requestParams.get(parameterName);
+                  // Lists
+                  if (List.class.isAssignableFrom(methodParamterTypes[0])) {
+                    clazzMethod.invoke(clazzObject,
+                        getFormViewList(genericType, requestParams, paramName));
+                  // Sets
+                  } else if (Set.class.isAssignableFrom(methodParamterTypes[0])) {
+                    clazzMethod.invoke(clazzObject,
+                        getFormViewSet(genericType, requestParams, paramName));
+                  }
+                } else {
+                  // Handel simple values
+									String[] argumentStringValues = requestParams.get(paramName);
 									// If more than one value is present then can't decide which one to use, so skip this parameter.
 									//TODO(kristjan.kiolein):Can it be done with fewer checks?
-									if (argumentStringValues != null && argumentStringValues.length == 1 && !argumentStringValues[0].equals("") || hasClassVariablesInRequest(parameterName, requestParams) //TODO(kristjan.kiolein):Could be checked along with lists or lists could be checked here -> remove separation bewtween similar things
+									if (argumentStringValues != null && argumentStringValues.length == 1 && !argumentStringValues[0].equals("") || hasClassVariablesInRequest(paramName, requestParams) //TODO(kristjan.kiolein):Could be checked along with lists or lists could be checked here -> remove separation bewtween similar things
 											|| ClassCastHelper.isBoolean(methodParamterTypes[0])) {
 										//Set simple values (using setters)
 										if (ClassCastHelper.isSimpleClass(methodParamterTypes[0])) {
@@ -119,11 +115,11 @@ public abstract class RequestHandler {
 										}
 										//If is another class try to initiate it
 										else {
-											Object o = getFormView(methodParamterTypes[0], requestParams, parameterName);
+											Object o = getFormView(methodParamterTypes[0], requestParams, paramName);
 											clazzMethod.invoke(clazzObject, methodParamterTypes[0].cast(o));
 										}
 									} else if (argumentStringValues != null && argumentStringValues.length > 1) {
-										throw new RuntimeException("Parameter doesn't have exactly one value. Can't assign value to field. Parameter name = " + parameterName + ", parameter values : " + argumentStringValues);
+										throw new RuntimeException("Parameter doesn't have exactly one value. Can't assign value to field. Parameter name = " + paramName + ", parameter values : " + argumentStringValues);
 									}
 								}
 							}
