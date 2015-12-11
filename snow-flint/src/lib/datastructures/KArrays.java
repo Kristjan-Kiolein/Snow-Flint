@@ -18,6 +18,8 @@ public class KArrays {
 	}
 	
 	
+	
+	
 	/**
 	 * Concatenates array element toString values and tries to parse
 	 * resulting string into integer
@@ -25,9 +27,14 @@ public class KArrays {
 	 * @return resulting integer value
 	 */
 	public static Integer concatenateToInteger(Object[] array)  throws NumberFormatException {
-		StringBuilder sb = new StringBuilder();
-		Arrays.stream(array).forEach(x -> sb.append(x.toString()));
-		Integer valueOf = Integer.valueOf(sb.toString());
+		Integer valueOf = null;
+		
+		if(array != null) {
+			StringBuilder sb = new StringBuilder();
+			Arrays.stream(array).forEach(x -> sb.append(x.toString()));
+			valueOf = Integer.valueOf(sb.toString());
+		}
+		
 		return valueOf;
 	}
 
