@@ -1,4 +1,4 @@
-package test.reflection;
+package test.lib.reflection;
 
 public class RequestHandlerTest {
 

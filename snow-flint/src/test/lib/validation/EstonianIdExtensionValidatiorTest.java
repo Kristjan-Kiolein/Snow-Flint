@@ -1,4 +1,4 @@
-package test.validation;
+package test.lib.validation;
 
 import lib.validation.EstonianIdExtensionValidatior;
 

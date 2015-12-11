@@ -1,9 +1,14 @@
 package projecteuler.p43_substringdivisibility;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import lib.datastructures.KArrays;
+import lib.math.KMath;
 
 /**
  *  <b> Problem 43 </b>
@@ -25,20 +30,37 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class SubStringDivisibility {
 	
-	private static final int[] DIVIDERS = {2, 3, 5, 7, 11, 13, 17};
-	private static final int[] NUMBERS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private static final int[] ODD_NUMBERS = {1, 3, 5, 7, 9};
-	private static final int[] EVEN_NUMBERS = {0, 2, 4, 6, 8};
+	private static final Integer[] DIVIDERS = {2, 3, 5, 7, 11, 13, 17};
+	private static final Integer[] NUMBERS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	
 	
-	private Map<Integer, Map<Set<Integer>, String>> solutions;
-	private List<Integer> permutations;
 	
-	public SubStringDivisibility() {
-		solutions = new HashMap<>();
-		for(int divider : DIVIDERS) {
-			solutions.put(divider, new HashMap<>());
+	public void solve() {
+		Map<Integer, Integer[]> threeNumbreCombinations = KMath.permutations(NUMBERS, 3).stream().collect(Collectors.toMap(KArrays::concatenateToInteger, x -> x ));
+		Map<Integer, Integer[]> combinations = new HashMap<>();
+		Map<Integer, Integer[]>  allowed = new HashMap<>();
+		
+		
+		for(Integer[] comb : threeNumbreCombinations.values()) {
+			Integer value = KArrays.concatenateToInteger(comb);
+			if(value%17 == 0) {
+				combinations.put(value, comb);
+			}
 		}
+		
+		List<Integer[]> validCombinations = new ArrayList<>();
+		
+		for(Integer[] comb : threeNumbreCombinations.values()) {
+			for(Integer[] accepted : combinations.values()) {
+				if(comb[1] == accepted[0] && comb[2] == accepted[1]) {
+					allowed.put(KArrays.concatenateToInteger(accepted), accepted);
+				}
+			}
+		}
+		
+		
+		
+		System.out.println(allowed.keySet());
 		
 	}
 	

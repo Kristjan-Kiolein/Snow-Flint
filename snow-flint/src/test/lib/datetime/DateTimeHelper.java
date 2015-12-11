@@ -1,4 +1,4 @@
-package test.datetime;
+package test.lib.datetime;
 
 public class DateTimeHelper {
 
