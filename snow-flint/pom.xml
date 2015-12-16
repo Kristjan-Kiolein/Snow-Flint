@@ -30,6 +30,12 @@
 			<artifactId>jmh-core</artifactId>
 			<version>${jmh.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>${jmh.version}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>
@@ -41,6 +47,19 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>benchmark.Test</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
