@@ -1,6 +1,16 @@
 package projecteuler.p96_sudoku;
 
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <b>Problem 96</b>
@@ -37,7 +47,101 @@ package projecteuler.p96_sudoku;
  * <i>By solving all fifty puzzles find the sum of the 3-digit numbers found in the top left corner of each solution grid;
  * for example, 483 is the 3-digit number found in the top left corner of the solution grid above.</i>
  */
-
+@SuppressWarnings("unused")
 public class SuDoku {
+	
+	private void unused(){};
+	private static final int BOARD_SIZE = 9;
+	private static final int[] VALUES = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static final int NR_OF_SECTIONS = 3;
+	
+	
+	private List<Integer[][]> sudokus;
+	
+	public SuDoku(Path file) {
+		sudokus = readSuDokus(file);
+	}
+	
+	
+	
+	public void solve() {
+		solve(sudokus.get(0));
+		
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void solve(Integer[][] board) {
+		Set[][] takenMoves = newHashArray(BOARD_SIZE);
+		//For each board square
+		for(int i = 0; i < BOARD_SIZE; i++) {
+			for(int j = 0; j < BOARD_SIZE; j++) {
+				//Get moves that can't be made there
+				if(board[i][j] == 0) {
+					for(int ii = 0; ii < BOARD_SIZE; ii++) {
+						takenMoves[i][j].add(board[ii][j]);
+					}
+					for(int jj = 0; jj < BOARD_SIZE; jj++) {
+						takenMoves[i][j].add(board[i][jj]);
+					}
+					//Those not in same row or column but in same section
+					for(int ij = 1; ij < NR_OF_SECTIONS; ij++){
+						int x = (i/NR_OF_SECTIONS)*NR_OF_SECTIONS + (i + ij)%3;
+						for(int ji = 1; ji < NR_OF_SECTIONS; ji++) {
+							int y = (j/NR_OF_SECTIONS)*NR_OF_SECTIONS + (j + ji)%3;
+							takenMoves[i][j].add(board[x][y]);
+						}
+					}
+				}
+			}
+		}
+		
+		Arrays.stream(takenMoves).forEach(x -> System.out.println(Arrays.toString(x)));
+		System.out.println();
+		Arrays.stream(takenMoves).forEach(x -> Arrays.stream(x).forEach(y -> System.out.print(y.size())));
+		System.out.println();
+		System.out.println(Arrays.stream(takenMoves).mapToInt(x -> Arrays.stream(x).mapToInt(y -> y.size()).sum()).sum());
+		System.out.println();
+		System.out.println(takenMoves[0][0]);
+		
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	private Set[][] newHashArray(int size) {
+		Set[][] hashArray = new HashSet[size][size];
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				hashArray[i][j] = new HashSet<Integer>();
+			}
+		}
+		return hashArray;
+	}
+
+
+
+	private List<Integer[][]> readSuDokus(Path file) {
+		List<Integer[][]> sudokus = new ArrayList<>();
+		try(BufferedReader br = new BufferedReader(new FileReader(file.toString()))) {
+			Integer[][] current = null;
+			int lineIndex = 0;
+		    for(String line; (line = br.readLine()) != null; ) {
+		    	if(line.startsWith("Grid")) {
+		    		if(current != null) sudokus.add(current);
+		    		lineIndex = 0;
+		    		current = new Integer[BOARD_SIZE][BOARD_SIZE];
+		    	} else {
+		    		for (int i = 0; i < line.length(); i++){
+		    		    current[lineIndex][i] = Character.getNumericValue(line.charAt(i));
+		    		}
+		    		lineIndex++;
+		    	}
+		    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return sudokus;
+	}
+
 
 }
