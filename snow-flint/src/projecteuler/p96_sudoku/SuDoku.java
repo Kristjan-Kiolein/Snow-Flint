@@ -3,14 +3,22 @@ package projecteuler.p96_sudoku;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.collections4.SetUtils.SetView;
+
+import lib.datastructures.KArrays;
 
 /**
  * <b>Problem 96</b>
@@ -47,30 +55,90 @@ import java.util.stream.Collectors;
  * <i>By solving all fifty puzzles find the sum of the 3-digit numbers found in the top left corner of each solution grid;
  * for example, 483 is the 3-digit number found in the top left corner of the solution grid above.</i>
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public class SuDoku {
 	
 	private void unused(){};
 	private static final int BOARD_SIZE = 9;
-	private static final int[] VALUES = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static final int NR_OF_SECTIONS = 3;
+	private static final Set<Integer> VALUES = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+	private static final Comparator<Integer> REVERSE_ORDER = new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			return o2.compareTo(o1);
+		}
+	};
+	
 	
 	
 	private List<Integer[][]> sudokus;
+	private List<Integer[][]> solutions;
 	
 	public SuDoku(Path file) {
 		sudokus = readSuDokus(file);
+		solutions = new ArrayList<>();
 	}
-	
 	
 	
 	public void solve() {
-		solve(sudokus.get(0));
 		
+		for(Integer[][] sudoku : sudokus) {
+			Integer [][] board = KArrays.copyOf(sudoku, Integer.class);
+			solutions.add(solve(board));
+		}
+		printBoard(sudokus.get(1));
+		printBoard(solve(sudokus.get(1)));
+		
+		
+//		for (int i = 0; i < solutions.size(); i++) {
+//			Integer[][] sudoku = solutions.get(i);
+//						System.out.println("\nSolution : ");
+//						System.out.println("Solution found for board " + i + " : " + !containsZero(sudoku));
+//		}
+	}
+	
+
+	private Integer[][] solve(Integer[][] board) {
+		if(board == null) return null;
+		Set[][] takenMoves = getTakenMovesAsSet(board);
+		Map<Integer, Map<int[], Set<Integer>>> groupedTakenMoves = groupTakenMoves(takenMoves);
+		Integer[][] result = board;
+		
+		if(!groupedTakenMoves.isEmpty()) {
+			for(Map<int[], Set<Integer>> taken : groupedTakenMoves.values()){
+				for(Entry<int[], Set<Integer>> entry : taken.entrySet()) {
+					SetView<Integer> possibleMoves = SetUtils.difference(VALUES, entry.getValue());
+					for(Integer move : possibleMoves){
+						Integer[][] boardCopy = KArrays.copyOf(board, Integer.class);
+						boardCopy[entry.getKey()[0]][entry.getKey()[1]] = move;
+						result = solve(boardCopy);
+						if (result != null && !containsZero(result)) return result;
+					}
+				}
+			}
+			
+		}
+		return result;
+	}
+	
+	private TreeMap<Integer, Map<int[], Set<Integer>>> groupTakenMoves(Set[][] takenMoves) {
+		TreeMap<Integer, Map<int[], Set<Integer>>> bestMoves = new TreeMap<>(REVERSE_ORDER);
+		for (int i = 0; i < takenMoves.length; i++) {
+			for (int j = 0; j < takenMoves.length; j++) {
+				int size = takenMoves[i][j].size();
+				if(size == 0) continue;
+				if(bestMoves.get(size) == null) {
+					bestMoves.put(size, new HashMap<>());
+				}
+				bestMoves.get(size).put(new int[]{i, j}, takenMoves[i][j]);
+			}
+		}
+		return bestMoves;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void solve(Integer[][] board) {
+
+
+	private Set[][] getTakenMovesAsSet(Integer[][] board) {
 		Set[][] takenMoves = newHashArray(BOARD_SIZE);
 		//For each board square
 		for(int i = 0; i < BOARD_SIZE; i++) {
@@ -94,19 +162,9 @@ public class SuDoku {
 				}
 			}
 		}
-		
-		Arrays.stream(takenMoves).forEach(x -> System.out.println(Arrays.toString(x)));
-		System.out.println();
-		Arrays.stream(takenMoves).forEach(x -> Arrays.stream(x).forEach(y -> System.out.print(y.size())));
-		System.out.println();
-		System.out.println(Arrays.stream(takenMoves).mapToInt(x -> Arrays.stream(x).mapToInt(y -> y.size()).sum()).sum());
-		System.out.println();
-		System.out.println(takenMoves[0][0]);
-		
+		return takenMoves;
 	}
-	
-	
-	@SuppressWarnings("rawtypes")
+
 	private Set[][] newHashArray(int size) {
 		Set[][] hashArray = new HashSet[size][size];
 		for(int i = 0; i < size; i++) {
@@ -116,8 +174,34 @@ public class SuDoku {
 		}
 		return hashArray;
 	}
-
-
+	
+	private Boolean[][][] getTakenMovesAsArray(Integer[][] board) {
+		Boolean[][][] takenMoves = new Boolean[BOARD_SIZE][BOARD_SIZE][BOARD_SIZE + 1];
+		//For each board square
+		for(int i = 0; i < BOARD_SIZE; i++) {
+			for(int j = 0; j < BOARD_SIZE; j++) {
+				//Get moves that can't be made there
+				if(board[i][j] == 0) {
+					for(int ii = 0; ii < BOARD_SIZE; ii++) {
+						takenMoves[i][j][board[ii][j]] = true;
+					}
+					for(int jj = 0; jj < BOARD_SIZE; jj++) {
+						takenMoves[i][j][board[i][jj]] = true;
+					}
+					//Those not in same row or column but in same section
+					for(int ij = 1; ij < NR_OF_SECTIONS; ij++){
+						int x = (i/NR_OF_SECTIONS)*NR_OF_SECTIONS + (i + ij)%3;
+						for(int ji = 1; ji < NR_OF_SECTIONS; ji++) {
+							int y = (j/NR_OF_SECTIONS)*NR_OF_SECTIONS + (j + ji)%3;
+							takenMoves[i][j][board[x][y]] = true;
+						}
+					}
+				}
+			}
+		}
+		return takenMoves;
+	}
+	
 
 	private List<Integer[][]> readSuDokus(Path file) {
 		List<Integer[][]> sudokus = new ArrayList<>();
@@ -143,5 +227,29 @@ public class SuDoku {
 		return sudokus;
 	}
 
-
+	private void printBoard(Integer[][] board) {
+		if(board == null){
+			System.out.print("No board");
+			return;
+		}
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board.length; j++) {
+				System.out.print(board[i][j] + " ");
+				if((j + 1) % NR_OF_SECTIONS == 0) System.out.print(" ");
+			}
+			System.out.println();
+			if((i + 1) % NR_OF_SECTIONS == 0) System.out.println();
+		}
+	}
+	
+	private boolean containsZero(Integer[][] sudoku) {
+		if(sudoku == null) return true;
+		for (int i = 0; i < sudoku.length; i++) {
+			for (int j = 0; j < sudoku.length; j++) {
+				if(sudoku[i][j] == 0)
+					return true;
+			}
+		}
+		return false;
+	}
 }

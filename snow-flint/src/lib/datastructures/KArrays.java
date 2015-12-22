@@ -1,5 +1,6 @@
 package lib.datastructures;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class KArrays {
@@ -16,9 +17,6 @@ public class KArrays {
 		values[i] = values[j];
 		values[j] = valueAtI;
 	}
-	
-	
-	
 	
 	/**
 	 * Concatenates array element toString values and tries to parse
@@ -37,5 +35,21 @@ public class KArrays {
 		
 		return valueOf;
 	}
+	
+	/**
+	 * Makes copy of 2D array
+	 * @param array array to copy
+	 * @param clazz clazz of the array objects
+	 * @return a copy of original array
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[][] copyOf(T[][] array, Class<T> clazz) {
+		if(array == null) return null;
+		T [][] copy = (T[][]) Array.newInstance(clazz, array.length, array.length);
+		for(int i = 0; i < array.length; i++)
+			copy[i] = array[i].clone();
+		return copy;
+	}
+	
 
 }
