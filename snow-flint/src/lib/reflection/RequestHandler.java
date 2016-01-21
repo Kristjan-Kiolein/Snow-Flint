@@ -66,8 +66,7 @@ public abstract class RequestHandler {
             throw new RuntimeException(
                 "Parameter doesn't have exactly one value. Can't assign value to field.");
           }
-        } catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-            | SecurityException | ParseException | UnknownObjectException e) {
+        } catch (IllegalArgumentException | SecurityException | ParseException | UnknownObjectException e) {
           // String message = "Error while handeling simple values.";
           e.printStackTrace();
         }
@@ -124,7 +123,7 @@ public abstract class RequestHandler {
 								}
 							}
 						}
-					} catch (RuntimeException | InvocationTargetException | NoSuchMethodException | ParseException | IllegalAccessException | UnknownObjectException e) {
+					} catch (RuntimeException | InvocationTargetException | ParseException | IllegalAccessException | UnknownObjectException e) {
 						String message = "Error while getting form values";
 						e.printStackTrace();
 					}

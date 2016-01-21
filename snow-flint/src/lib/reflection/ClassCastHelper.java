@@ -14,10 +14,34 @@ import lib.datetime.DateTimeHelper;
 
 public final class ClassCastHelper {
 
+	
+	
+	
 	/**
 	 * If is simple class, then cast given string to desired simple class. 
 	 * @param castToType type of class to cast 
-	 * @param value value for the class object
+	 * @param value value for the class object in string form
+	 * @return class object if can cast, null otherwise
+	 * @throws UnknownObjectException if object to cast to is not simple class as defined by {@link ClassCastHelper#isSimpleClass(Class)}
+	 * @throws ParseException if parsing date fails
+	 */
+	public static <T> T castToSimpleClass(Class<T> castToType, String value) throws UnknownObjectException, ParseException {
+		try {
+			return castToSimpleClassThrowExceptions(castToType, value);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException 
+				| NoSuchMethodException | SecurityException  e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	
+	
+	/**
+	 * If is simple class, then cast given string to desired simple class. 
+	 * @param castToType type of class to cast 
+	 * @param value value for the class object in string form
 	 * @return class object if can cast, null otherwise
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
@@ -28,7 +52,7 @@ public final class ClassCastHelper {
 	 * @throws UnknownObjectException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T castToSimpleClass(Class<T> castToType, String value) 
+	private static <T> T castToSimpleClassThrowExceptions(Class<T> castToType, String value) 
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, 
 					NoSuchMethodException, SecurityException, ParseException, UnknownObjectException {
 		
@@ -44,7 +68,7 @@ public final class ClassCastHelper {
 			returnValue = (T) isTrue;
 		} 
 		//Numbers
-		else if(ClassCastHelper.isPrimitiveNumberType(castToType)) {
+		else if(ClassCastHelper.isPrimitiveOrWrapperNumberType(castToType)) {
 			Class<?> primitiveType = ClassCastHelper.getPrimitiveNumberWrapper(castToType);
 			Method valueOfMethod = primitiveType.getMethod("valueOf", String.class);
 			Object primitiveValue = null;
@@ -99,7 +123,7 @@ public final class ClassCastHelper {
 	 * @param clazz class to check
 	 * @return true, only if is class is one of int, short, long, float, double, byte or their corresponding java.lang."wrapper" 
 	 */
-	public static boolean isPrimitiveNumberType(Class<?> clazz) {
+	public static boolean isPrimitiveOrWrapperNumberType(Class<?> clazz) {
 		return clazz.equals(int.class)    || clazz.isAssignableFrom(Integer.class)
 			|| clazz.equals(short.class)  || clazz.isAssignableFrom(Short.class)
 			|| clazz.equals(long.class)   || clazz.isAssignableFrom(Long.class)
@@ -111,9 +135,10 @@ public final class ClassCastHelper {
 	/**
 	 * Gets corresponding java.lang."wrapper" for primitive number class.
 	 * @param primitiveClazz primitive number class
-	 * @return java.lang."wrapper" class
+	 * @return java.lang."wrapper" class if is primitive or wrapper,  null if one is not found
 	 */
 	public static Class<?> getPrimitiveNumberWrapper(Class<?> primitiveClazz) {
+		if(!isPrimitiveOrWrapperNumberType(primitiveClazz)) return null;
 		if(primitiveClazz.equals(int.class)) return Integer.class;
 		if(primitiveClazz.equals(short.class)) return Short.class;
 		if(primitiveClazz.equals(long.class)) return Long.class;
@@ -121,35 +146,6 @@ public final class ClassCastHelper {
 		if(primitiveClazz.equals(double.class)) return Double.class;
 		if(primitiveClazz.equals(byte.class)) return Byte.class;
 		return primitiveClazz;
-	}
-
-	/**
-	 * Checks if given throwable is NumberFormatException
-	 * @param e - throwable to check
-	 * @return true, if given throwable is NumberFormatException 
-	 */
-	public static boolean isNumberFormatException(Throwable e) {
-		while (e != null) {
-			if (e instanceof NumberFormatException)
-				return true;
-			e = e.getCause();
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if class is one that can be casted from string to given class using "ee.elering.avp.ui.requestHabdler.castToSimpleClass" method
-	 * @param clazz - class to check
-	 * @return true if can be handled
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	public static boolean isSimpleClass(Class<?> clazz) throws InstantiationException, IllegalAccessException{
-		return isPrimitiveNumberType(clazz) || clazz.equals(String.class)
-			|| clazz.equals(char.class) || clazz.equals(Character.class)
-			||  clazz.equals(boolean.class) || clazz.equals(Boolean.class)
-			|| clazz.equals(BigInteger.class) || clazz.equals(BigDecimal.class)
-			|| clazz.equals(Date.class) || clazz.isEnum();
 	}
 
 	/**
@@ -161,4 +157,31 @@ public final class ClassCastHelper {
 		return clazz.equals(boolean.class) || clazz.equals(Boolean.class);
 	}
 
+	/**
+	 * Checks if class is one that can be casted from string to given class using {@link ClassCastHelper#castToSimpleClass(Class, String)}
+	 * @param clazz - class to check
+	 * @return true if can be handled
+	 */
+	public static boolean isSimpleClass(Class<?> clazz) {
+		return isPrimitiveOrWrapperNumberType(clazz) || clazz.equals(String.class)
+			|| clazz.equals(char.class) || clazz.equals(Character.class)
+			||  clazz.equals(boolean.class) || clazz.equals(Boolean.class)
+			|| clazz.equals(BigInteger.class) || clazz.equals(BigDecimal.class)
+			|| clazz.equals(Date.class) || clazz.isEnum();
+	}
+	
+	/**
+	 * Checks if given throwable is NumberFormatException
+	 * @param e - throwable to check
+	 * @return true, if given throwable is NumberFormatException 
+	 */
+	private static boolean isNumberFormatException(Throwable e) {
+		while (e != null) {
+			if (e instanceof NumberFormatException)
+				return true;
+			e = e.getCause();
+		}
+		return false;
+	}
+	
 }
