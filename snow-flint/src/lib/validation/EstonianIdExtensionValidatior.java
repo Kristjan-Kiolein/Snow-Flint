@@ -11,7 +11,7 @@ public class EstonianIdExtensionValidatior {
 
   private static final String BIRTY_YEAR = "([0-9]{2})";
   private static final String BIRTH_MONTH = "(0[1-9]|1[012])";
-  private static final String BIRTH_DAY = "(0[1-9]|[12]\\d|3[01]) ";
+  private static final String BIRTH_DAY = "(0[1-9]|[12]\\d|3[01])";
   private static final String BIRTH_SEQUENCE_NR = "(\\d{3})";
   private static final String CONTROL_NUMBER = "(\\d$)";
 
@@ -85,13 +85,13 @@ public class EstonianIdExtensionValidatior {
   private static String getCenturyAndSexRegex(int year) {
     String regex = null;
 
-    if (1800 <= year && year >= 1899) {
+    if (1800 <= year && year <= 1899) {
       regex = "(^[1-2])";
-    } else if (1900 <= year && year >= 1999) {
+    } else if (1900 <= year && year <= 1999) {
       regex = "(^[1-4])";
-    } else if (2000 <= year && year >= 2099) {
+    } else if (2000 <= year && year <= 2099) {
       regex = "(^[1-6])";
-    } else if (2100 <= year && year >= 2199) {
+    } else if (2100 <= year && year <= 2199) {
       regex = "(^[1-8])";
     }
 
@@ -102,12 +102,12 @@ public class EstonianIdExtensionValidatior {
    * Adds all id extension regex parts together for given year. Minimum year is 1800 and maximum
    * 2199.
    * 
-   * @param year
-   *          latest year at which the regex must match
+   * @param year latest year at which the regex must match
    * @return full regex for id extension
    */
   private static String getIdRegex(int year) {
-    return getCenturyAndSexRegex(year) == null ? null : getCenturyAndSexRegex(year) + BIRTY_YEAR
+    String centuryAndSexRegex = getCenturyAndSexRegex(year);
+	return centuryAndSexRegex == null ? null : centuryAndSexRegex + BIRTY_YEAR
         + BIRTH_MONTH + BIRTH_DAY + BIRTH_SEQUENCE_NR + CONTROL_NUMBER;
   }
 }
