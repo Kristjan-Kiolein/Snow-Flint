@@ -1,6 +1,5 @@
 package lib.datastructures;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KLists {
