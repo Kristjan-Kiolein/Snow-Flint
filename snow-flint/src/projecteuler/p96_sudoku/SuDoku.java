@@ -82,12 +82,14 @@ public class SuDoku {
 	
 	public void solve() {
 		
-		for(Integer[][] sudoku : sudokus) {
-			Integer [][] board = KArrays.copyOf(sudoku, Integer.class);
-			solutions.add(solve(board));
-		}
-		printBoard(sudokus.get(1));
-		printBoard(solve(sudokus.get(1)));
+//		for(Integer[][] sudoku : sudokus) {
+//			Integer [][] board = KArrays.copyOf(sudoku, Integer.class);
+//			solutions.add(solve(board));
+//		}
+		
+		int i = 3;
+		printBoard(sudokus.get(i));
+		printBoard(solve(sudokus.get(i)));
 		
 		
 //		for (int i = 0; i < solutions.size(); i++) {
