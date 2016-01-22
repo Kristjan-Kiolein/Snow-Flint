@@ -215,6 +215,16 @@ public class KMath {
 	    }
 	}
 	
-	
-	
+	/**
+	 * TAKES SQRT OF NUMBER AND THEN SQUARES IT AND COMPARES TO INPUT!
+	 * SLOW!
+	 * Perfect square is n = a*a where a is integer.
+	 * @param n integer to check if it is perfect square
+	 * @return true if is square of integer, false otherwise
+	 */
+	@Deprecated
+	public final static boolean isPerfectSquareSimple(long n) {
+		long tst = (long)Math.sqrt(n);
+		return tst*tst == n;
+	}
 }

@@ -12,18 +12,31 @@ import org.openjdk.jmh.annotations.State;
 
 public class KMathBenchmark {
 
+	private static final long NR_OF_TEST_RUNS = 1_000_000;
 	
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MICROSECONDS)
 	@State(Scope.Thread)
 	public static class IsPerfectSquare {
-		
-		private static final int NR_OF_TEST = 1_000_000;
-		
+
 		@Benchmark
 		public void consequentIntegers() {
-			for(int i = 0; i < NR_OF_TEST; i++) {
+			for(long i = 0; i < NR_OF_TEST_RUNS; i++) {
 				KMath.isPerfectSquare(i);
+			}
+		}
+	}
+	
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MICROSECONDS)
+	@State(Scope.Thread)
+	public static class IsPerfectSquareSimple {
+		
+		@Benchmark
+		@SuppressWarnings("deprecation")
+		public void consequentIntegers() {
+			for(long i = 0; i < NR_OF_TEST_RUNS; i++) {
+				KMath.isPerfectSquareSimple(i);
 			}
 		}
 	}
