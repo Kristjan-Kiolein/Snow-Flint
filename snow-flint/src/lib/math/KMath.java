@@ -192,4 +192,29 @@ public class KMath {
 		}
 	}
 
+	
+	/**
+	 * Perfect square is n = a*a where a is integer.
+	 * Algorithm may not be very fast!
+	 * @param n integer to check if it is perfect square
+	 * @return true if is square of integer, false otherwise
+	 */
+	public final static boolean isPerfectSquare(long n)
+	{
+	    if (n < 0)
+	        return false;
+
+	    switch((int)(n & 0xF))
+	    {
+	    case 0: case 1: case 4: case 9:
+	        long tst = (long)Math.sqrt(n);
+	        return tst*tst == n;
+
+	    default:
+	        return false;
+	    }
+	}
+	
+	
+	
 }

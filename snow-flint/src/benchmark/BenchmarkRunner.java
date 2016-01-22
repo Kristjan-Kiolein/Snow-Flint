@@ -6,7 +6,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-public class Test {
+public class BenchmarkRunner {
 
 	@Benchmark
 	public void helloWorld() {
@@ -21,7 +21,7 @@ public class Test {
 
 	public static void main(String[] args) throws RunnerException {
 		Options options = new OptionsBuilder()
-				.include(Test.class.getSimpleName()).forks(1).build();
+				.include(BenchmarkRunner.class.getSimpleName()).forks(1).build();
 
 		new Runner(options).run();
 	}

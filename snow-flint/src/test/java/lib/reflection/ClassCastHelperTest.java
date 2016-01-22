@@ -1,4 +1,4 @@
-package test.lib.reflection;
+package lib.reflection;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -4,15 +4,18 @@
 	<groupId>snow-flint</groupId>
 	<artifactId>snow-flint</artifactId>
 	<version>1</version>
-	
+
 	<properties>
 		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
 		<collections4.version>4.1</collections4.version>
 		<junit.verison>4.11</junit.verison>
 		<jmh.version>1.11.2</jmh.version>
+
 		<maven-compiler.version>3.3</maven-compiler.version>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -23,7 +26,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.verison}</version>
-			<scope>test</scope>
+			<!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
@@ -37,7 +40,7 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -58,7 +61,7 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath />
-						<argument>benchmark.Test</argument>
+						<argument>benchmark.BenchmarkRunner</argument>
 					</arguments>
 				</configuration>
 			</plugin>

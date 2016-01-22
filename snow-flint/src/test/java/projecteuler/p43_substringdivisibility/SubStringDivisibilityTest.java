@@ -1,4 +1,4 @@
-package test.lib.projecteuler.p43_substringdivisibility;
+package projecteuler.p43_substringdivisibility;
 
 import java.math.BigInteger;
 

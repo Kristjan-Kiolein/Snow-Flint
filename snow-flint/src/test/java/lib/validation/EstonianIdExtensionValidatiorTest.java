@@ -1,4 +1,4 @@
-package test.lib.validation;
+package lib.validation;
 
 import java.util.Arrays;
 import java.util.List;
