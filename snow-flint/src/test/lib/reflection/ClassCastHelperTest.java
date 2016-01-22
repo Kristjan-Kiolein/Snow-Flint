@@ -1,6 +1,5 @@
 package test.lib.reflection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.rmi.activation.UnknownObjectException;
@@ -144,9 +143,6 @@ public class ClassCastHelperTest {
 	public static class castToSimpleClassTest {
 		
 		
-		private static final List<String> INPUTS  = Arrays.asList("4000000000","32,767", "400000000000", "123.123", "123.123", "127 ");
-		private static final List<Object> RESULTS = Arrays.asList(400000000,32.767, 400000000000L, 123.123F, 123.123D, 127);
-		
 		@Test
 		public void castToString() throws UnknownObjectException, ParseException {
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(String.class, "Tere"), "Tere");
@@ -157,18 +153,96 @@ public class ClassCastHelperTest {
 		@Test
 		public void castToBoolean() throws UnknownObjectException, ParseException {
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Boolean.class, "true"), true);
-			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Boolean.class, null), false);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Boolean.class, "false"), false);
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(boolean.class, "true"), true);
-			Assert.assertEquals(ClassCastHelper.castToSimpleClass(boolean.class, null), false);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(boolean.class, "false"), false);
 		}
 		
-//		@Test
-//		public void castToNumber() throws UnknownObjectException, ParseException {
-//			for(int i = 0; i < PRIMITIVE_NUMBER_CLASSES.size(); i++) {
-//				Assert.assertEquals(ClassCastHelper.castToSimpleClass(PRIMITIVE_NUMBER_CLASSES.get(i), INPUTS.get(i)),PRIMITIVE_NUMBER_CLASSES.get(i).cast(RESULTS.get(i)));
-//				Assert.assertEquals(ClassCastHelper.castToSimpleClass(WRAPPER_NUMBER_CLASSES.get(i), INPUTS.get(i)), RESULTS.get(i).getClass().cast(PRIMITIVE_NUMBER_CLASSES.get(i)));
-//			}
-//		}
+		@Test
+		public void castToInteger() throws UnknownObjectException, ParseException {
+
+		}
+		
+		@Test
+		public void castToIntegerValues() throws UnknownObjectException, ParseException {
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Byte.class, "123"), Byte.valueOf("123"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(byte.class, "123"), Byte.valueOf("123"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Short.class, "12345"), Short.valueOf("12345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(short.class, "12345"), (short) 12345);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Integer.class, "1234567"), 1234567);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(int.class, "1234567"), 1234567);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Long.class, "123451234512345"), Long.valueOf("123451234512345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(long.class, "123451234512345"), Long.valueOf("123451234512345"));
+		}
+		
+		@Test
+		public void castToDecimalValues() throws UnknownObjectException, ParseException {
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Float.class, "123451234"), Float.valueOf("123451234"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(float.class, "123451234"), Float.valueOf("123451234"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Float.class, "123451234.1234"), Float.valueOf("123451234.1234"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(float.class, "123451234,1234"), Float.valueOf("123451234.1234"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Double.class, "12345"), Double.valueOf("12345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(double.class, "12345"), Double.valueOf("12345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Double.class, "12345.123"), Double.valueOf("12345.123"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(double.class, "12345,123"), Double.valueOf("12345.123"));
+		}
+		
+		/*
+		@Rule
+		public ExpectedException thrown = ExpectedException.none();
+		
+		@Test
+		public void castIncorrectInputToNumber() throws UnknownObjectException, ParseException {
+			thrown.expect(NumberFormatException.class);
+
+			ClassCastHelper.castToSimpleClass(Byte.class, "123.123");
+			ClassCastHelper.castToSimpleClass(byte.class, "123,123");
+			ClassCastHelper.castToSimpleClass(Short.class, "12345.123");
+			ClassCastHelper.castToSimpleClass(short.class, "12345,23");
+			ClassCastHelper.castToSimpleClass(Integer.class, "1234567.123");
+			ClassCastHelper.castToSimpleClass(int.class, "1234567,123");
+			ClassCastHelper.castToSimpleClass(Long.class, "123451234512345.123");
+			ClassCastHelper.castToSimpleClass(long.class, "123451234512345,123");
+			ClassCastHelper.castToSimpleClass(Byte.class, "123.123");
+			ClassCastHelper.castToSimpleClass(byte.class, "123,123");
+			ClassCastHelper.castToSimpleClass(Short.class, "12345.123");
+			ClassCastHelper.castToSimpleClass(short.class, "12345,23");
+			ClassCastHelper.castToSimpleClass(Integer.class, "1234567.123");
+			ClassCastHelper.castToSimpleClass(int.class, "1234567,123");
+			ClassCastHelper.castToSimpleClass(Long.class, "123451234512345.123");
+			ClassCastHelper.castToSimpleClass(long.class, "123451234512345,123");
+		}
+		*/
+		
+		@Test
+		public void castToBigInteger() throws UnknownObjectException, ParseException {
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(BigInteger.class, "123451234512345123451234512345"), new BigInteger("123451234512345123451234512345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(BigInteger.class, "12345"), new BigInteger("12345"));
+		}
+		
+		@Test
+		public void castToBigDecimal() throws UnknownObjectException, ParseException {
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(BigDecimal.class, "123451234512345123451234512345.12313123123123"), new BigDecimal("123451234512345123451234512345.12313123123123"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(BigDecimal.class, "12345.123"), new BigDecimal("12345.123"));
+		}
+		
+		/*
+		@Test
+		public void castToDate() throws UnknownObjectException, ParseException {
+			
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.YEAR, 2015);
+			cal.set(Calendar.MONTH, 10);
+			cal.set(Calendar.DAY_OF_MONTH, 10);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.HOUR, 0);
+			Date dateRepresentation = cal.getTime();
+			
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Date.class, "2015-10-10"), dateRepresentation);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Date.class, "2015.10.10"), new Date(2015, 10, 10));
+		}
+		*/
+		
 	}
-	
+		
 }

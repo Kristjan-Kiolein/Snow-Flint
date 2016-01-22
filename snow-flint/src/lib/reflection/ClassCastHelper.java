@@ -28,8 +28,7 @@ public final class ClassCastHelper {
 	public static <T> T castToSimpleClass(Class<T> castToType, String value) throws UnknownObjectException, ParseException {
 		try {
 			return castToSimpleClassThrowExceptions(castToType, value);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException 
-				| NoSuchMethodException | SecurityException  e) {
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException  e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -55,12 +54,13 @@ public final class ClassCastHelper {
 	private static <T> T castToSimpleClassThrowExceptions(Class<T> castToType, String value) 
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, 
 					NoSuchMethodException, SecurityException, ParseException, UnknownObjectException {
+		if (value == null) return null;
 		
 		T returnValue = null;
 	
 		//String
 		if (String.class.isAssignableFrom(castToType)) {
-			returnValue = value == null || value.equals("") ? null : (T) value;
+			returnValue = value.equals("") ? null : (T) value;
 		} 
 		//Boolean
 		else if (castToType.equals(boolean.class) || Boolean.class.isAssignableFrom(castToType) ) {
@@ -76,7 +76,10 @@ public final class ClassCastHelper {
 			try {
 				primitiveValue = valueOfMethod.invoke(primitiveType, value.replaceAll(",", "."));
 			} catch (InvocationTargetException e) {
-				if(!ClassCastHelper.isNumberFormatException(e)) throw e; 
+				if(ClassCastHelper.isNumberFormatException(e)) {
+					throw (NumberFormatException) e.getCause();
+				}
+					 
 			}
 			returnValue = (T) primitiveValue;
 		} 
@@ -132,6 +135,7 @@ public final class ClassCastHelper {
 			|| clazz.equals(byte.class)   || clazz.isAssignableFrom(Byte.class);
 	}
 
+	
 	/**
 	 * Gets corresponding java.lang."wrapper" for primitive number class.
 	 * @param primitiveClazz primitive number class
