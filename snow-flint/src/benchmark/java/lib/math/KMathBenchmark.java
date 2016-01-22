@@ -18,9 +18,13 @@ public class KMathBenchmark {
 	@State(Scope.Thread)
 	public static class IsPerfectSquare {
 		
+		private static final int NR_OF_TEST = 1_000_000;
+		
 		@Benchmark
-		public void helloWorld() {
-			// a dummy method to check the overhead
+		public void consequentIntegers() {
+			for(int i = 0; i < NR_OF_TEST; i++) {
+				KMath.isPerfectSquare(i);
+			}
 		}
 	}
 	
