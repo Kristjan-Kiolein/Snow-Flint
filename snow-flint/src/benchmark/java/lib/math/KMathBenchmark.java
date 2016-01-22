@@ -1,4 +1,4 @@
-package benchmark.lib.math;
+package lib.math;
 
 import java.util.concurrent.TimeUnit;
 

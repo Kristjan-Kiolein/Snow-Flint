@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 
 import lib.validation.EstonianIdExtensionValidatior;
 
+@RunWith(Enclosed.class)
 public class EstonianIdExtensionValidatiorTest {
 
 	private static final List<String> CORRECT_ID_EXTENSIONS = Arrays.asList("37605030299", "49403136515", "39109260242", "34501234215", "49403136526");

@@ -16,10 +16,10 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
 
-import lib.reflection.ClassCastHelper;
-
-//@RunWith(Enclosed.class)
+@RunWith(Enclosed.class)
 public class ClassCastHelperTest {
 
 	
@@ -168,9 +168,9 @@ public class ClassCastHelperTest {
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Byte.class, "123"), Byte.valueOf("123"));
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(byte.class, "123"), Byte.valueOf("123"));
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Short.class, "12345"), Short.valueOf("12345"));
-			Assert.assertEquals(ClassCastHelper.castToSimpleClass(short.class, "12345"), (short) 12345);
-			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Integer.class, "1234567"), 1234567);
-			Assert.assertEquals(ClassCastHelper.castToSimpleClass(int.class, "1234567"), 1234567);
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(short.class, "12345"), Short.valueOf("12345"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Integer.class, "1234567"), Integer.valueOf("1234567"));
+			Assert.assertEquals(ClassCastHelper.castToSimpleClass(int.class, "1234567"), Integer.valueOf("1234567"));
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(Long.class, "123451234512345"), Long.valueOf("123451234512345"));
 			Assert.assertEquals(ClassCastHelper.castToSimpleClass(long.class, "123451234512345"), Long.valueOf("123451234512345"));
 		}
