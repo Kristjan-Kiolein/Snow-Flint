@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * <b>Largest product in a grid</b><br>
@@ -44,7 +46,9 @@ public class LargestProductInAGrid {
 
 	public static void main(String[] args) {
 		int nrOfMultiples = 4;
-		System.out.println(solve(Paths.get("src/main/java/projecteuler/p11_largestProductInAGrid", "grid.txt"), nrOfMultiples));
+		System.out.println("Largest product is " +
+				NumberFormat.getNumberInstance(Locale.US).format(
+						solve(Paths.get("src/main/java/projecteuler/p11_largestProductInAGrid", "grid.txt"), nrOfMultiples)));
 	}
 
 	public static int solve(Path file, int nrOfMultiples) {
@@ -54,47 +58,64 @@ public class LargestProductInAGrid {
 
 	private static int findLargestProduct(int[][] grid, int nrOfMultiples) {
 
-//		int largestHorizontal = findLargestHorizontal(grid, nrOfMultiples);
-//		int largestVertical = findLargestVertical(grid, nrOfMultiples);
+		int largestHorizontal = findLargestHorizontal(grid, nrOfMultiples);
+		int largestVertical = findLargestVertical(grid, nrOfMultiples);
 		int largestMajorDiagonal = findLargestMajorDiagonal(grid, nrOfMultiples);
-//		int largestMinorDiagonal = findLargestMinorDiagonal(grid, nrOfMultiples);
+		int largestMinorDiagonal = findLargestMinorDiagonal(grid, nrOfMultiples);
 
-//		int l1 = largestHorizontal > largestVertical ? largestHorizontal : largestVertical;
-//		int l2 = l1 > largestMajorDiagonal ? l1 : largestMajorDiagonal;
-//		return l2 > largestMinorDiagonal ? l2 : largestMinorDiagonal;
-		return largestMajorDiagonal;
+		System.out.println("largestHorizontal : " + NumberFormat.getNumberInstance(Locale.US).format(largestHorizontal));
+		System.out.println("largestVertical : " + NumberFormat.getNumberInstance(Locale.US).format(largestVertical));
+		System.out.println("largestMajorDiagonal : " + NumberFormat.getNumberInstance(Locale.US).format(largestMajorDiagonal));
+		System.out.println("largestMinorDiagonal : " + NumberFormat.getNumberInstance(Locale.US).format(largestMinorDiagonal));
+		
+		
+		int l1 = largestHorizontal > largestVertical ? largestHorizontal : largestVertical;
+		int l2 = l1 > largestMajorDiagonal ? l1 : largestMajorDiagonal;
+		return l2 > largestMinorDiagonal ? l2 : largestMinorDiagonal;
+//		return largestHorizontal;
 	}
 
 	private static int findLargestMajorDiagonal(int[][] grid, int nrOfMultiples) {
+		
 		int largestProduct = 0;
+		int[] largestMembers = null;
+		
 		for (int k = 0; k < grid.length*2; k++) {
+			int[] firstMember = new int[] {0, Math.abs(grid.length - k)};
+			int product = 1;
 			for (int i = 0; i < k; i++) {
 				int j = grid.length - k + i;
-				int[] firstMember = new int[] { 0, grid.length - 1 };
-				int verticalProduct = 1;
 				if (j < grid.length && i < grid.length && j >= 0 && i >= 0) {
 					int addedNumber = grid[j][i];
+					
 					if (addedNumber == 0) {
-						verticalProduct = 1;
+						product = 1;
 						firstMember[0] = i + 1;
-						firstMember[1] = j;
+						firstMember[1] = j + 1;
 					} else {
-						if (i - firstMember[0] >= nrOfMultiples && firstMember[1] + j < grid.length) {
-							int excludedNumber = grid[j + nrOfMultiples][i - nrOfMultiples];
-							verticalProduct *= addedNumber / excludedNumber;
-							if (verticalProduct > largestProduct)
-								largestProduct = verticalProduct;
+						if (i - firstMember[0] >= nrOfMultiples && j - firstMember[1] >= nrOfMultiples
+								|| j - firstMember[0] >= nrOfMultiples && i - firstMember[1] >= nrOfMultiples) {
+							int excludedNumber = grid[j - nrOfMultiples][i - nrOfMultiples];
+							product = product * addedNumber / excludedNumber;
+							if (product > largestProduct) {
+								largestProduct = product;
+								largestMembers = new int[] {grid[j - 3][i - 3], grid[j - 2][i - 2], grid[j- 1][i - 1], grid[j][i]};
+							}
+								
 						} else {
-							verticalProduct *= addedNumber;
-							if (i - firstMember[0] == nrOfMultiples - 1 && firstMember[1] + j >= grid.length - 1 && verticalProduct > largestProduct)
-								largestProduct = verticalProduct;
+							product *= addedNumber;
+							if ((i - firstMember[0] == nrOfMultiples - 1 && j - firstMember[1] == nrOfMultiples - 1 
+									|| j - firstMember[0] == nrOfMultiples - 1 && i - firstMember[1] == nrOfMultiples - 1 ) && product > largestProduct){
+								largestProduct = product;
+								largestMembers = new int[] {grid[j - 3][i - 3], grid[j - 2][i - 2], grid[j- 1][i - 1], grid[j][i]};
+							}
 						}
 					}
-					
-					
+
 					System.out.printf("%02d ", grid[j][i]);
 				}
 			}
+			System.out.print("Largest largestProduct: " + NumberFormat.getNumberInstance(Locale.US).format(largestProduct) + " members : " + Arrays.toString(largestMembers));
 			System.out.println("");
 		}
 		System.out.println();
@@ -104,33 +125,43 @@ public class LargestProductInAGrid {
 	private static int findLargestMinorDiagonal(int[][] grid, int nrOfMultiples) {
 		
 		int largestProduct = 0;
+		int[] largestMembers = null;
 
 		for (int k = 0; k < grid.length*2; k++) {
 			int[] firstMember = new int[] { 0, k };
-			int minorDiagonalProduct = 1;
+			int product = 1;
 			for (int i = 0; i <= k; i++) {
 				int j = k - i;
 				if (j < grid.length && i < grid.length) {
 					int addedNumber = grid[j][i];
+					
 					if (addedNumber == 0) {
-						minorDiagonalProduct = 1;
+						product = 1;
 						firstMember[0] = i + 1;
-						firstMember[1] = j;
+						firstMember[1] = j - 1;
 					} else {
-						if (i - firstMember[0] >= nrOfMultiples && firstMember[1] + j < grid.length) {
+						if (i - firstMember[0] >= nrOfMultiples && nrOfMultiples + j < grid.length) {
 							int excludedNumber = grid[j + nrOfMultiples][i - nrOfMultiples];
-							minorDiagonalProduct *= addedNumber / excludedNumber;
-							if (minorDiagonalProduct > largestProduct)
-								largestProduct = minorDiagonalProduct;
+							product = product * addedNumber / excludedNumber;
+							if (product > largestProduct) {
+								largestProduct = product;
+								largestMembers = new int[] {grid[j + 3][i - 3], grid[j + 2][i - 2], grid[j + 1][i - 1], grid[j][i]};
+							}
 						} else {
-							minorDiagonalProduct *= addedNumber;
-							if (i - firstMember[0] == nrOfMultiples - 1 && firstMember[1] + j >= grid.length - 1 && minorDiagonalProduct > largestProduct)
-								largestProduct = minorDiagonalProduct;
+							product *= addedNumber;
+							if (i - firstMember[0] == nrOfMultiples - 1 && nrOfMultiples + j < grid.length  && product > largestProduct) {
+								largestProduct = product;
+								largestMembers = new int[] {grid[j + 3][i - 3], grid[j + 2][i - 2], grid[j + 1][i - 1], grid[j][i]};
+							}
 						}
 					}
+					System.out.printf("%02d ", grid[j][i]);
 				}
 			}
+			System.out.print("Largest largestProduct: " + NumberFormat.getNumberInstance(Locale.US).format(largestProduct) + " members : " + Arrays.toString(largestMembers));
+			System.out.println("");
 		}
+		System.out.println();
 
 		return largestProduct;
 	}
@@ -138,58 +169,77 @@ public class LargestProductInAGrid {
 	private static int findLargestVertical(int[][] grid, int nrOfMultiples) {
 
 		int largestProduct = 0;
+		int[] largestMembers = null;
 
 		for (int i = 0; i < grid.length; i++) {
 			int firstMember = 0;
-			int verticalProduct = 1;
+			int product = 1;
 			for (int j = 0; j < grid.length; j++) {
 				int addedNumber = grid[j][i];
 				if (addedNumber == 0) {
-					verticalProduct = 1;
+					product = 1;
 					firstMember = j + 1;
 				} else {
 					if (j - firstMember >= nrOfMultiples) {
 						int excludedNumber = grid[j - nrOfMultiples][i];
-						verticalProduct *= addedNumber / excludedNumber;
-						if (verticalProduct > largestProduct)
-							largestProduct = verticalProduct;
+						product = product*addedNumber / excludedNumber;
+						if (product > largestProduct) {
+							largestProduct = product;
+							largestMembers = new int[] {grid[j - 3][i], grid[j - 2][i], grid[j - 1][i], grid[j][i]};
+						}
 					} else {
-						verticalProduct *= addedNumber;
-						if (j - firstMember == nrOfMultiples - 1 && verticalProduct > largestProduct)
-							largestProduct = verticalProduct;
+						product *= addedNumber;
+						if (j - firstMember == nrOfMultiples - 1 && product > largestProduct){
+							largestProduct = product;
+							largestMembers = new int[] {grid[j - 3][i], grid[j - 2][i], grid[j - 1][i], grid[j][i]};
+						}
 					}
 				}
+				System.out.printf("%02d ", grid[j][i]);
 			}
+			System.out.print("Largest largestProduct: " + NumberFormat.getNumberInstance(Locale.US).format(largestProduct) + " members : " + Arrays.toString(largestMembers));
+			System.out.println();
 		}
+		System.out.println();
 		return largestProduct;
 	}
 
 	private static int findLargestHorizontal(int[][] grid, int nrOfMultiples) {
 
 		int largestProduct = 0;
+		int[] largestMembers = null;
 
 		for (int i = 0; i < grid.length; i++) {
 			int firstMember = 0;
-			int horizontalProduct = 1;
+			int product = 1;
 			for (int j = 0; j < grid.length; j++) {
 				int addedNumber = grid[i][j];
 				if (addedNumber == 0) {
-					horizontalProduct = 1;
+					product = 1;
 					firstMember = j + 1;
 				} else {
 					if (j - firstMember >= nrOfMultiples) {
 						int excludedNumber = grid[i][j - nrOfMultiples];
-						horizontalProduct *= addedNumber / excludedNumber;
-						if (horizontalProduct > largestProduct)
-							largestProduct = horizontalProduct;
+						product = product * addedNumber / excludedNumber;
+						if (product > largestProduct) {
+							largestProduct = product;
+							largestMembers = new int[] {grid[i][j - 3], grid[i][j - 2], grid[i][j - 1], grid[i][j]};
+						}
 					} else {
-						horizontalProduct *= addedNumber;
-						if (j - firstMember == nrOfMultiples - 1 && horizontalProduct > largestProduct)
-							largestProduct = horizontalProduct;
+						product *= addedNumber;
+						if (j - firstMember == nrOfMultiples - 1 && product > largestProduct) {
+							largestProduct = product;
+							largestMembers = new int[] {grid[i][j - 3], grid[i][j - 2], grid[i][j - 1], grid[i][j]};
+						}
+							
 					}
 				}
+				System.out.printf("%02d ", grid[i][j]);
 			}
+			System.out.print("Largest largestProduct: " + NumberFormat.getNumberInstance(Locale.US).format(largestProduct) + " members : " + Arrays.toString(largestMembers));
+			System.out.println("");
 		}
+		System.out.println();
 		return largestProduct;
 	}
 
