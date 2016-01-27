@@ -1,4 +1,4 @@
-package p12_hihlyDivisibleTriangularNumber;
+package projecteuler.p12_hihlyDivisibleTriangularNumber;
 
 import java.util.HashSet;
 import java.util.Set;
