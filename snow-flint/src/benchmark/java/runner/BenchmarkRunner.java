@@ -7,7 +7,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import lib.math.KMathBenchmark;
+import p13_largeSum.LargeSumBenchmark;
 
 /**
  * To run, in command-line: $ mvn clean install exec:exec
@@ -17,8 +17,9 @@ public class BenchmarkRunner {
 
 	public static void main(String[] args) throws RunnerException {
 		Options options = new OptionsBuilder()
-				.include(KMathBenchmark.IsPerfectSquare.class.getSimpleName())
-				.include(KMathBenchmark.IsPerfectSquareSimple.class.getSimpleName())
+//				.include(KMathBenchmark.IsPerfectSquare.class.getSimpleName())
+//				.include(KMathBenchmark.IsPerfectSquareSimple.class.getSimpleName())
+				.include(LargeSumBenchmark.Solve.class.getSimpleName())
 				.forks(1)
 				.warmupIterations(10)
 				.measurementIterations(10)

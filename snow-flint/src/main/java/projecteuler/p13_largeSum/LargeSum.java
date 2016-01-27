@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,38 +17,54 @@ public class LargeSum {
 
 	
 	public static void main(String[] args) {
-		List<String> numbers = readGrid(Paths.get("src/main/java/projecteuler/p13_largeSum", "numbers.txt"));
+		List<String> numbers = readNumbers(Paths.get("src/main/java/projecteuler/p13_largeSum", "numbers.txt"));
+		long t = System.currentTimeMillis();
 		solve(numbers);
+		System.out.println(System.currentTimeMillis() - t);
 	}
 	
-	private static void solve(List<String> numbers) {
-		int[] sum = new int[numbers.get(0).length() + (numbers.size() + "").length()];
+	
+	
+	public static String solve(List<String> numbers) {
 		
+		//Make array with maximum length of resulting sum
+		//Assuming all numbers are same length (or smaller than first)
+		byte[] sum = new byte[numbers.get(0).length() + (numbers.size() + "").length()];
+		
+		//Iterate over all the digits in every number, O(n*k)
 		for(String n : numbers) {
 			for (int i = n.length() - 1; i >= 0 ; i--) {
 				int toAdd = Character.getNumericValue(n.charAt(i));
-				addDigit(sum, i, toAdd, n.length());
+				addDigit(sum, i, n.length(), toAdd);
 			}
 		}
 		
+		StringBuilder sb = new StringBuilder(sum.length);
+		for(byte c : sum) {
+			sb.append(c);
+		}
 		
-		System.out.println(Arrays.toString(sum));
-		
+		return sb.toString();
 	}
 
-	private static void addDigit(int[] sum, int i, int toAdd, int n) {
+	private static void addDigit(byte[] sum, int charIndex, int numberLength, int toAdd) {
 		
-		int newValue = sum[i] + toAdd;
-
-		int carry = newValue/10;
-		int reminder = newValue%10;
-
-		sum[i] = reminder;
+		//So the result wouldn't come backwards
+		//We are reading smaller numbers first, so put them at end of the array.
+		byte index = (byte) (sum.length + charIndex - numberLength);
 		
-		if(carry != 0) addDigit(sum, i + 1, carry, n);
+		byte newValue = (byte) (sum[index] + toAdd);
+
+		byte carry = (byte) (newValue/10);
+		byte reminder = (byte) (newValue%10);
+
+		sum[index] = reminder;
+		
+		if(carry != 0) addDigit(sum, charIndex - 1, numberLength, carry);
 	}
 	
 	
+
 	
 	
 	
@@ -57,9 +72,7 @@ public class LargeSum {
 	
 	
 	
-	
-	
-	private static List<String> readGrid(Path file) {
+	public static List<String> readNumbers(Path file) {
 		List<String> numbers = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file.toString()))) {
 			for (String line; (line = br.readLine()) != null;) {
