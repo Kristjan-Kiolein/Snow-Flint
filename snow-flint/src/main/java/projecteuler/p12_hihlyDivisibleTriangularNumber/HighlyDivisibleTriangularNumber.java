@@ -28,12 +28,12 @@ public class HighlyDivisibleTriangularNumber {
 
 	
 	public static void main(String[] args) {
-		solve();
+		System.out.println(solve());
 	}
 	
 	
 	
-	private static void solve() {
+	private static int solve() {
 		
 		int targetDivisors = 501;
 		int triangularNumber = 0;
@@ -63,5 +63,6 @@ public class HighlyDivisibleTriangularNumber {
 			n++;
 		}
 		System.out.println(triangularNumber);
+		return triangularNumber;
 	}
 }

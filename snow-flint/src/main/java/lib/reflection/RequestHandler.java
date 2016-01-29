@@ -125,6 +125,7 @@ public abstract class RequestHandler {
 						}
 					} catch (RuntimeException | InvocationTargetException | ParseException | IllegalAccessException | UnknownObjectException e) {
 						String message = "Error while getting form values";
+						System.out.println(message);
 						e.printStackTrace();
 					}
 				}

@@ -227,4 +227,91 @@ public class KMath {
 		long tst = (long)Math.sqrt(n);
 		return tst*tst == n;
 	}
+	
+	
+	
+	/**
+	 * Multiplies two positive numbers no matter the size.
+	 * Uses "Long multiplication" algorithm.
+	 * @param n1 positive number to multiply
+	 * @param n2 positive number to multiply
+	 * @return multiplication value of n1 and n2 (n1*n2), null if any inputs is null or empty.
+	 * @throws RuntimeException if one of the number strings contains a non digit character 
+	 * @see <a href="https://en.wikipedia.org/wiki/Multiplication_algorithm#Long_multiplication">wikipedia article</a>
+	 */
+	@SuppressWarnings("unused")
+	public static String multiply(String n1, String n2) throws RuntimeException{
+		int adasd = 0;
+		if(n1 == null || n2 == null || n1.isEmpty() || n2.isEmpty()) return null;
+		
+		byte[] n1digits = new byte[n1.length()];
+		byte[] n2digits = new byte[n2.length()];
+		
+		for (int i = 0; i < n1.length(); i++) {
+			byte value = (byte) Character.getNumericValue(n1.charAt(i));
+			if(value < 0) {
+				String message = "Given number (" + n1 + ") contains a non digit character : " + n1.charAt(i) + " at " + i;
+//				throw new ParseException(message, 1);
+				throw new RuntimeException(message);
+			}
+			n1digits[i] = value;
+		}
+		
+		for (int i = 0; i < n2.length(); i++) {
+			byte value = (byte) Character.getNumericValue(n2.charAt(i));
+			if(value < 0) {
+				String message = "Given number (" + n2 + ") contains a non digit character : " + n2.charAt(i) + " at " + i;
+//				throw new ParseException(message, 1);
+				throw new RuntimeException(message);
+			}
+			n2digits[i] = value;
+		}
+		
+		byte[] digits = new byte[n1.length() + n2.length()];
+		
+		for (int i = n1digits.length - 1 ; i >= 0 ; i--) {
+			for (int j = n2digits.length - 1; j >= 0 ; j--) {
+				addDigit(digits, (n1digits.length - 1 - i) + (n2digits.length - 1 - j), (byte) (n1digits[i]*n2digits[j]));
+			}
+		}
+		
+		StringBuilder result = new StringBuilder();
+		
+		boolean skipZero = true;
+		for(byte b : digits) {
+			if(skipZero)  {
+				if(b != 0) {
+					skipZero = false;
+				} else {
+					continue;
+				}
+			} 
+			result.append(b);
+		}
+		
+		return result.toString();
+	}
+	
+	/**
+	 * Adds byte to certain digit in given array in base 10.
+	 * 
+	 * @param sum current sum of numbers, where smallest powers of base are at end and highest at start
+	 * @param basePower shows position in array added to, ie 1 -> 0, 10 -> 1 and 100 -> 2
+	 * @param toAdd number to add to that position
+	 */
+	public static void addDigit(byte[] sum, int basePower, byte toAdd) {
+		
+		int index = sum.length - basePower - 1;
+		
+		byte newValue = (byte) (sum[index] + toAdd);
+
+		//To get new base change these "10"s
+		byte carry = (byte) (newValue/10);
+		byte reminder = (byte) (newValue%10);
+
+		sum[index] = reminder;
+		
+		if(carry != 0) addDigit(sum, basePower + 1, carry);
+	}
+	
 }
