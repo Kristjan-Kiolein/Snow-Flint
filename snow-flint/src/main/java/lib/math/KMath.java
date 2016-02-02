@@ -1,6 +1,7 @@
 package lib.math;
 
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -213,7 +214,7 @@ public class KMath {
 	 * @param basePower shows position in array added to, ie 1 -> 0, 10 -> 1 and 100 -> 2
 	 * @param toAdd number to add to that position
 	 */
-	public static void addDigit(byte[] sum, int basePower, byte toAdd) {
+	private static void addDigit(byte[] sum, int basePower, byte toAdd) {
 		
 		int index = sum.length - basePower - 1;
 		
@@ -226,6 +227,19 @@ public class KMath {
 		sum[index] = reminder;
 		
 		if(carry != 0) addDigit(sum, basePower + 1, carry);
+	}
+	
+	/**
+	 * Finds factorial value of given number.
+	 * @param n number of which factorial to find
+	 * @return factorial value
+	 */
+	public static BigInteger factorial(BigInteger n) {
+		BigInteger result = BigInteger.ONE;
+		for (int i = 1; i <= n.intValue(); i++) {
+			result = result.multiply(new BigInteger(i + ""));
+		}
+		return result;
 	}
 	
 }
