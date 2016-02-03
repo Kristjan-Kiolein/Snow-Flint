@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import projecteuler.p009_pythagoreanTriplet.SpecialPythagoreanTriplet;
+
 @RunWith(Enclosed.class)
 public class SpecialPythagoreanTripletTest {
 

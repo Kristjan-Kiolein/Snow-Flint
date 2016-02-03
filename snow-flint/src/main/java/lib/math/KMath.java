@@ -154,9 +154,8 @@ public class KMath {
 	 * @throws RuntimeException if one of the number strings contains a non digit character 
 	 * @see <a href="https://en.wikipedia.org/wiki/Multiplication_algorithm#Long_multiplication">wikipedia article</a>
 	 */
-	@SuppressWarnings("unused")
 	public static String multiply(String n1, String n2) throws RuntimeException{
-		int adasd = 0;
+
 		if(n1 == null || n2 == null || n1.isEmpty() || n2.isEmpty()) return null;
 		
 		byte[] n1digits = new byte[n1.length()];
