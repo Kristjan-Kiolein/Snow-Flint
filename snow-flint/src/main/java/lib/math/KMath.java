@@ -241,4 +241,52 @@ public class KMath {
 		return result;
 	}
 	
+	
+	
+	/**
+	 * Finds the sum of all the proper divisors of given number.
+	 * @param target number of which divisors to find
+	 * @return sum of divisors
+	 * @see <a href="http://stackoverflow.com/a/18836978/4015280">Stackoverflow question</a>
+	 * @see <a href="https://en.wikipedia.org/wiki/Divisor_function#Properties">Algorithm wikipedia page</a>
+	 * @see <a href="http://planetmath.org/FormulaForSumOfDivisors">Algorithm explanation</a>
+	 */
+	public static int divisorsSum(int target)	{
+		
+		if(target <= 0) return 0;
+		
+	    int t = target;
+	    int result = 1;
+
+	    //  Handle two specially.
+	    {
+	        int p = leastPower(2, t);
+	        result *= p-1;
+	        t /= p/2;
+	    }
+
+	    //  Handle odd factors.
+	    for (int i = 3; i*i <= t; i += 2) {
+	        int p = leastPower(i, t);
+	        result *= (p-1) / (i-1);
+	        t /= p/i;
+	    }
+	    //  At this point, t must be one or prime.
+	    if (1 < t) {
+	    	result *= 1+t;
+	    }
+
+	    return result - target;
+	}
+	
+	
+	
+	private static int leastPower(int a, int x)
+	{
+	    int b = a;
+	    while (x % b == 0)
+	        b *= a;
+	    return b;
+	}
+	
 }

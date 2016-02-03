@@ -13,7 +13,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
-import projecteuler.p013_largeSum.LargeSum;
+import projecteuler.p010_p019.p013_largeSum.LargeSum;
 
 public class LargeSumBenchmark {
 	
