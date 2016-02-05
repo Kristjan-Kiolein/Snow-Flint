@@ -3,6 +3,7 @@ package lib.math;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lib.datastructures.KArrays;
@@ -10,6 +11,18 @@ import lib.datastructures.KArrays;
 public class KMath {
 
   
+	
+	/**
+	 * Calculates permutations using the Heap's algorithm
+	 * @param values  values to be permutated
+	 * @return list of all permutations of given values
+	 **/
+	public static <T> List<T[]> permutations(T[] values) {
+		List<T[]> results = new ArrayList<>();
+		permutations(values, values.length, results);
+		return results;
+	}
+	
 	/**
 	 * Calculates permutations using the Heap's algorithm
 	 * @param values  values to be permutated
@@ -25,18 +38,7 @@ public class KMath {
 		
 		return permutations;
 	}
-  
-	/**
-	 * Calculates permutations using the Heap's algorithm
-	 * @param values  values to be permutated
-	 * @return list of all permutations of given values
-	 **/
-	public static <T> List<T[]> permutations(T[] values) {
-		List<T[]> results = new ArrayList<>();
-		permutations(values, values.length - 1, results);
-		return results;
-	}
-  
+	
 	/**
 	 * Calculates permutations using the Heap's algorithm
 	 * @param values values to be permutated
@@ -44,19 +46,18 @@ public class KMath {
 	 * @param results list of resulting permutations 
 	 **/
 	private static <T> void permutations(T[] values, int n, List<T[]> results) {
-		if (n == 0) {
-			results.add(values);
+		
+		if (n == 1) {
+			results.add(values.clone());
 		} else {
 			for (int i = 0; i < n; i++) {
-				permutations(values.clone(), n - 1, results);
-				
-				if (n % 2 == 0) {
-					KArrays.swap(values, i, n);
+				permutations(values, n-1, results);
+				if (n % 2 == 1) {
+					KArrays.swap(values, 0, n-1);
 				} else {
-					KArrays.swap(values, 0, n);
+					KArrays.swap(values, i, n-1);
 				}
 			}
-			permutations(values.clone(), n - 1, results);
 		}
 	}
 
@@ -279,8 +280,6 @@ public class KMath {
 	    return result - target;
 	}
 	
-	
-	
 	private static int leastPower(int a, int x)
 	{
 	    int b = a;
@@ -288,5 +287,4 @@ public class KMath {
 	        b *= a;
 	    return b;
 	}
-	
 }

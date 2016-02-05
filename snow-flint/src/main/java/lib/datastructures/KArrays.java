@@ -6,13 +6,15 @@ import java.util.Arrays;
 public class KArrays {
 
 	/**
-	 * Swaps positions of two elements in array
+	 * Swaps positions of two elements in array in place.
+	 * Does not create copy of array!
 	 * @param values array of values 
 	 * @param i position of element to swap
 	 * @param j position of element to swap with
 	 */
 	public static <T> void swap(T[] values, int i, int j) {
-		if(i < 0 || j < 0 || i >= values.length || j >= values.length) return;
+		if(values == null) throw new IllegalArgumentException("Array which elemets to swap is null.");
+		if(values == null || i < 0 || j < 0 || i >= values.length || j >= values.length) throw new IllegalArgumentException("Indexes to swap are out of range.");
 		T valueAtI = values[i];
 		values[i] = values[j];
 		values[j] = valueAtI;
